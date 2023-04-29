@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Товары и подразделения</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+		function deleteAssortment(assortmentId) {
+             $.ajax({
+            url: '/delete_assortment/' + assortmentId,
+            type: 'DELETE',
+            success: function(result) {
+                $("#good" + assortmentId).remove();
+            }
+            });
+        }
+
+
+
+		function deleteDivision(divisionId) {
+            $.ajax({
+            url: '/delete_division/' + divisionId,
+            type: 'DELETE',
+            success: function(result) {
+                $("#division" + divisionId).remove();
+            }
+            });
+        }
+
+
+
+
+    </script>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" class="btn btn-danger" href="{{ url_for('logout') }}">Выход</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <h2 class="text-center">Таблицы товаров и подразделений</h2>
+    <div class="row">
+        <div class="col-sm-6">
+            <h3 class="text-center">Товары</h3>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addProductModal">Добавить
+                товар
+            </button>
+            <a href="{{ url_for('download_assortment_csv') }}" class="btn btn-primary">Импорт .csv</a>
+            <a href="{{ url_for('download_assortment_xls') }}" class="btn btn-primary">Импорт .xls</a>
+            <br><br>
+            <table class="table table-striped table-bordered">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Наименование</th>
+                    <th>Единица измерения</th>
+                    <th></th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for good in goods %}
+                <tr id="good{{ good.id }}">
+                    <td>{{ good.id }}</td>
+                    <td>{{ good.name }}</td>
+                    <td>{{ good.measureUnit }}</td>
+                    <td>
+                        <button type="button" class="btn btn-danger" onclick="deleteAssortment({{ good.id }})">Удалить
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-sm-6">
+            <h3 class="text-center">Подразделения</h3>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addDepartmentModal">Добавить
+                подразделение
+            </button>
+            <a href="{{ url_for('download_division_csv') }}" class="btn btn-primary">Импорт .csv</a>
+            <a href="{{ url_for('download_division_xls') }}" class="btn btn-primary">Импорт .xls</a>
+            <br><br>
+            <table class="table table-striped table-bordered">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Наименование</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for division in divisions %}
+                <tr id="division{{ division.id }}">
+                    <td>{{ division.id }}</td>
+                    <td>{{ division.name }}</td>
+                    <td>
+                        <button type="button" class="btn btn-danger" onclick="deleteDivision({{ division.id }})">
+                            Удалить
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for adding Product -->
+<div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProductModalLabel">Добавить товар</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Product Form -->
+                <form method="POST" action="{{ url_for('add_product') }}">
+                    {{ assortment_form.csrf_token }}
+                    <div class="form-group">
+                        {{ assortment_form.name.label }} {{ assortment_form.name }}
+                    </div>
+                    <div class="form-group">
+                        {{ assortment_form.measureUnit.label }} {{ assortment_form.measureUnit }}
+                    </div>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for adding Department -->
+<div class="modal fade" id="addDepartmentModal" tabindex="-1" role="dialog" aria-labelledby="addDepartmentModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addDepartmentModalLabel">Добавить подразделение</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Department Form -->
+                <form method="POST" action="{{ url_for('add_division') }}">
+                    {{ division_form.csrf_token }}
+                    <div class="form-group">
+                        {{ division_form.name.label }} {{ division_form.name }}
+                    </div>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
