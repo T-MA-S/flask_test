@@ -53,4 +53,4 @@ jobs:
         script: |
           cd /var/www/test/flask_test
           git pull
-          docker-compose up -d
+          docker-compose up -d --build
