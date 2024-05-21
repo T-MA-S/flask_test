@@ -17,7 +17,9 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         password: ${{ secrets.SSH_PASSWORD }}
         port: 22
-        script: echo "SSH connection successful"
+        script: |
+           echo "SSH connection successful"
+           exit 0 
 
   check_docker:
     needs: check_ssh_connection
@@ -37,6 +39,7 @@ jobs:
             echo "Docker is not installed on the VPS"
             exit 1
           fi
+          exit 0 
 
   deploy:
     needs: check_docker
@@ -54,3 +57,4 @@ jobs:
           cd /var/www/test/flask_test
           git pull
           docker-compose up -d --build
+          exit 0 
