@@ -100,7 +100,7 @@
 1. Установить Docker на свой компьютер, если он еще не установлен.(https://www.docker.com/get-started)
 2. Склонировать данный репозиторий на свой компьютер (`git clone https://github.com/T-MA-S/flask_test.git`)
 3. Перейти в директорию с проектом (`cd flask_test`)
-4. Запустить Docker контейнер с помощью команды `docker-compose up`
+4. Запустить Docker контейнер с помощью команды `docker-compose up -d`
 
 # Информация о доступах
 
