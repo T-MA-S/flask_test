@@ -6,19 +6,25 @@ on:
       - main
 
 jobs:
-  deploy:
+  check_ssh_connection:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Check if server is reachable
-      run: |
-        if ! ping -c 1 ${{ secrets.SSH_HOST }} &> /dev/null
-        then
-          echo "Server is not reachable"
-          exit 1
-        fi
-    
-    - name: connect to vps and check Docker installation
+    - name: Check SSH connection
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        password: ${{ secrets.SSH_PASSWORD }}
+        port: 22
+        script: echo "SSH connection successful"
+
+  check_docker:
+    needs: check_ssh_connection
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Connect to VPS and check Docker installation
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.SSH_HOST }}
@@ -31,8 +37,13 @@ jobs:
             echo "Docker is not installed on the VPS"
             exit 1
           fi
-    
-    - name: connect to vps and deploy
+
+  deploy:
+    needs: check_docker
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Connect to VPS and deploy
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.SSH_HOST }}
